@@ -72,7 +72,7 @@ pipeline {
             startTime   : startTime,
             endTime     : endTime,
             triggerType : triggerType,
-            buildLog    : buildLog
+            buildLog    : lastLines
           ]
 
           def jsonText = JsonOutput.prettyPrint(JsonOutput.toJson(payload))
