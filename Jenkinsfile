@@ -50,9 +50,16 @@ pipeline {
           //def logLines = currentBuild.rawBuild.getLog(100)
           //def buildLog = logLines.join("\n")
 
-          def fullLog = currentBuild.rawBuild.getLog()
-          def last100 = fullLog.padRight(100)
-          def buildLog = last100.join("\n")
+          // Jenkins 전체 로그 중 마지막 10000줄 가져오기
+          def allLines = currentBuild.rawBuild.getLog(10000)    // List<String>
+
+          // 마지막 100줄만 추출 (100줄보다 적으면 전체 반환)
+          def lastLines = allLines.size() > 100
+              ? allLines.subList(allLines.size() - 100, allLines.size())
+              : allLines
+
+          // 문자열로 합치기
+          def buildLog = lastLines.join("\n")
 
           def payload = [
             jobName     : jobName,
