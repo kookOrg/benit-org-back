@@ -47,15 +47,15 @@ pipeline {
           // 🔥 트리거 타입 판별 (수동 / PR / 스케줄/SCM)
           def triggerType = detectTriggerType()
 
-          //def logLines = currentBuild.rawBuild.getLog(100)
-          //def buildLog = logLines.join("\n")
+          def logLines = currentBuild.rawBuild.getLog(10000)
+          def buildLog = logLines.join("\n")
 
-          def allLines = currentBuild.rawBuild.getLog(10000)
-          int tail = 30
-
-          def buildLog = allLines.size() > tail
-              ? allLines.subList(allLines.size() - tail, allLines.size()).join("\n")
-              : allLines.join("\n")
+//           def allLines = currentBuild.rawBuild.getLog(10000)
+//           int tail = 30
+//
+//           def buildLog = allLines.size() > tail
+//               ? allLines.subList(allLines.size() - tail, allLines.size()).join("\n")
+//               : allLines.join("\n")
 
           def payload = [
             jobName     : jobName,
