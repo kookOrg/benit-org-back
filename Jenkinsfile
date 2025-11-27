@@ -47,8 +47,12 @@ pipeline {
           // 🔥 트리거 타입 판별 (수동 / PR / 스케줄/SCM)
           def triggerType = detectTriggerType()
 
-          def logLines = currentBuild.rawBuild.getLog(100)
-          def buildLog = logLines.join("\n")
+          //def logLines = currentBuild.rawBuild.getLog(100)
+          //def buildLog = logLines.join("\n")
+
+          def fullLog = currentBuild.rawBuild.getLog()
+          def last100 = fullLog.takeRight(100)
+          def buildLog = last100.join("\n")
 
           def payload = [
             jobName     : jobName,
