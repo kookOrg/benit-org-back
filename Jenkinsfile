@@ -120,4 +120,4 @@ String detectTriggerType() {
   }
 
   return type
-}
+} // 테스트1
