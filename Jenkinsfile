@@ -26,17 +26,17 @@ pipeline {
   post {
     // 성공/실패 모두 Jira 전송
     always {
-      // 👉 실행자 정보(BUILD_USER_*)를 쓰려면 무조건 wrap 안에서
+      // 실행자 정보(BUILD_USER_*)를 쓰려면 무조건 wrap 안에서
       wrap([$class: 'BuildUser']) {
         script {
           // 기본 빌드 정보
-          def result      = currentBuild.currentResult      // SUCCESS / FAILURE
+          def result      = currentBuild.currentResult // SUCCESS / FAILURE
           def jobName     = env.JOB_NAME
           def buildNumber = env.BUILD_NUMBER as int
           def branch      = env.GIT_BRANCH ?: '-'
           def jobUrl      = env.BUILD_URL
           def logUrl      = "${env.BUILD_URL}consoleText"
-          def commitHash  = env.GIT_COMMIT ?: "unknown"
+          def commitHash  = env.GIT_COMMIT ?: "-"
 
           // 시작/종료 시간
           def startTime = new Date(currentBuild.startTimeInMillis).format("yyyy-MM-dd HH:mm:ss", TimeZone.getTimeZone(env.TZ))
@@ -60,19 +60,19 @@ pipeline {
 //               : allLines.join("\n")
 
           def payload = [
-            jobName     : jobName,
-            buildNumber : buildNumber,
-            result      : result,
-            branch      : branch,
-            commitHash  : commitHash,
-            startedBy   : startedBy,
-            jobUrl      : jobUrl,
-            logUrl      : logUrl,
-            startTime   : startTime,
-            endTime     : endTime,
-            triggerType : triggerType,
-            buildLog    : buildLog,
-            startedByEmail : startedByEmail
+            jobName     : jobName            // job 이름
+            ,buildNumber : buildNumber       // 빌드 번호
+            ,result      : result            // 빌드 결과
+            ,branch      : branch            // 브랜치 이름
+            ,commitHash  : commitHash        // 커밋 해쉬
+            ,startedBy   : startedBy         // 빌드 수행자
+            ,startTime   : startTime         // 빌드 시작 시간
+            ,endTime     : endTime           // 빌드 종료 시간
+            ,triggerType : triggerType       // 빌드 트리거 타입
+            ,buildLog    : buildLog          // 빌드 상세 로그
+            ,startedByEmail : startedByEmail // 빌드 수행자 이메일
+            ,jobUrl      : jobUrl
+            ,logUrl      : logUrl
           ]
 
           def jsonText = JsonOutput.prettyPrint(JsonOutput.toJson(payload))
@@ -113,7 +113,7 @@ String detectTriggerType() {
     } else if (desc.contains("timer") || desc.contains("cron")) {
       type = "SCHEDULE"
     } else if (desc.contains("scm change")) {
-      type = "SCHEDULE"   // 필요하면 "SCM" 으로 따로 분리해도 됨
+      type = "SCHEDULE"
     } else if (desc.contains("pull request") || desc.contains("pr")) {
       type = "PR"
     }
