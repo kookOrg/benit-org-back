@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # 타임존 설정
 TZ='Asia/Seoul'
