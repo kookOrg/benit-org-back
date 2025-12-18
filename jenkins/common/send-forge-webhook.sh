@@ -36,8 +36,8 @@ else
   TRIGGER_TYPE="SCHEDULE"
 fi
 
- echo "JENKINS_USER: ${JENKINS_USER}"
- echo "JENKINS_API_TOKEN: ${JENKINS_API_TOKEN}"
+ echo "JENKINS_USER: $JENKINS_USER"
+ echo "JENKINS_API_TOKEN: $JENKINS_API_TOKEN"
 
 # 로그 추출
 BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
