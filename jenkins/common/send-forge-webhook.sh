@@ -46,7 +46,7 @@ echo "ISSUE_TYPE: $ISSUE_TYPE"
 BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
 
 # Webhook URL
-WEBHOOK_URL="https://9b0901cb-05cd-4272-84b3-8b47898c1ace.hello.atlassian-dev.net/x1/l68YiQz6kbyGJkCnm-xs1sA_5QY"
+#WEBHOOK_URL="https://9b0901cb-05cd-4272-84b3-8b47898c1ace.hello.atlassian-dev.net/x1/l68YiQz6kbyGJkCnm-xs1sA_5QY"
 
 # Payload 생성 및 전송 함수
 send_payload() {
