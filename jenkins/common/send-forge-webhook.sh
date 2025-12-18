@@ -23,10 +23,6 @@ START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 STARTED_BY="${BUILD_USER_ID:-"-"}"
 STARTED_BY_EMAIL="${BUILD_USER_EMAIL:-"-"}"
 
-# 프로젝트/이슈 생성 정보
-#PROJECT_KEY="JEN"
-#ISSUE_TYPE="Task"
-
 # 트리거 타입 판단
 if [ -n "$BUILD_USER_ID" ]; then
   TRIGGER_TYPE="MANUAL"
@@ -36,17 +32,8 @@ else
   TRIGGER_TYPE="SCHEDULE"
 fi
 
-echo "JENKINS_USER: $JENKINS_USER"
-echo "JENKINS_API_TOKEN: $JENKINS_API_TOKEN"
-echo "WEBHOOK_SECRET: $WEBHOOK_SECRET"
-echo "PROJECT_KEY: $PROJECT_KEY"
-echo "ISSUE_TYPE: $ISSUE_TYPE"
-
 # 로그 추출
 BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
-
-# Webhook URL
-#WEBHOOK_URL="https://9b0901cb-05cd-4272-84b3-8b47898c1ace.hello.atlassian-dev.net/x1/l68YiQz6kbyGJkCnm-xs1sA_5QY"
 
 # Payload 생성 및 전송 함수
 send_payload() {
