@@ -93,5 +93,5 @@ trap '
 ' EXIT
 
 # 실패 테스트
-#echo "[TEST] 강제로 빌드를 실패"
-#exit 1
+echo "[TEST] 강제로 빌드를 실패"
+exit 1
