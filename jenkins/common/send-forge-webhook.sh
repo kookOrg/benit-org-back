@@ -25,11 +25,11 @@ STARTED_BY_EMAIL="${BUILD_USER_EMAIL:-"-"}"
 
 # 트리거 타입 판단
 if [ -n "$BUILD_USER_ID" ]; then
-  TRIGGER_TYPE="MANUAL"
+  TRIGGER_TYPE="수동"
 elif [ -n "$CHANGE_ID" ]; then
   TRIGGER_TYPE="PR"
 else
-  TRIGGER_TYPE="SCHEDULE"
+  TRIGGER_TYPE="스케줄"
 fi
 
 # 로그 추출
