@@ -12,8 +12,6 @@ COMMIT_HASH="${GIT_COMMIT}"
 
 #RESULT="${BUILD_RESULT:-UNKNOWN}"
 
-echo "BUILD_RESULT: ${BUILD_RESULT}"
-
 START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
 STARTED_BY="${BUILD_USER_ID:-"-"}"
@@ -51,6 +49,8 @@ cat > jenkins-payload.json <<EOF
   "issueType": "$ISSUE_TYPE"
 }
 EOF
+
+echo "BUILD_RESULT: ${BUILD_RESULT}"
 
 curl -s -X POST \
   -H "Content-Type: application/json" \
