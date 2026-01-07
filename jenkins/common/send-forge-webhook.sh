@@ -51,7 +51,13 @@ cat > jenkins-payload.json <<EOF
 EOF
 
 echo "=================================="
-echo "BUILD_RESULT: ${BUILD_RESULT}"
+BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" \
+  "${BUILD_URL}api/json")
+
+RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
+[ -z "$RESULT" ] && RESULT="UNKNOWN"
+
+echo "RESULT(from API): $RESULT"
 echo "=================================="
 
 curl -s -X POST \
