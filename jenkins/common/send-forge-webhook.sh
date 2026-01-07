@@ -14,7 +14,9 @@ LOG_URL="${BUILD_URL}consoleText"
 COMMIT_HASH="${GIT_COMMIT}"
 
 # 기본 상태는 SUCCESS
-RESULT="SUCCESS"
+#RESULT="SUCCESS"
+# Jenkins 최종 빌드 결과 사용
+RESULT="${BUILD_RESULT:-UNKNOWN}"
 
 # 시작 시간
 START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
@@ -82,15 +84,17 @@ EOF
 }
 
 # 종료 시점에 실패 여부 판단 후 payload 보내기
-trap '
-  EXIT_CODE=$?
+#trap '
+#  EXIT_CODE=$?
 
-  if [ "$EXIT_CODE" -ne 0 ]; then
-    RESULT="FAILURE"
-  fi
+#  if [ "$EXIT_CODE" -ne 0 ]; then
+#    RESULT="FAILURE"
+#  fi
 
-  send_payload
-' EXIT
+#  send_payload
+#' EXIT
+
+send_payload
 
 # 실패 테스트
 #echo "[TEST] 강제로 빌드를 실패"
