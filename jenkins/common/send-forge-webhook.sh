@@ -15,8 +15,6 @@ COMMIT_HASH="${GIT_COMMIT}"
 
 # 기본 상태는 SUCCESS
 #RESULT="SUCCESS"
-# Jenkins 최종 빌드 결과 사용
-RESULT="${BUILD_RESULT:-UNKNOWN}"
 
 # 시작 시간
 START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
@@ -93,6 +91,8 @@ EOF
 
 #  send_payload
 #' EXIT
+# Jenkins 최종 빌드 결과 사용
+RESULT="${BUILD_RESULT:-UNKNOWN}"
 
 send_payload
 
