@@ -86,7 +86,7 @@ trap '
   EXIT_CODE=$?
 
   if [ "$EXIT_CODE" -ne 0 ]; then
-    RESULT="${BUILD_STATUS}"
+    RESULT="FAILURE"
   fi
 
   send_payload
