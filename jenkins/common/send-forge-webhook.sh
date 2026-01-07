@@ -30,6 +30,16 @@ BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s \
 
 END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
+echo "=================================="
+BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" \
+  "${BUILD_URL}api/json")
+
+RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
+[ -z "$RESULT" ] && RESULT="UNKNOWN"
+
+echo "RESULT(from API): $RESULT"
+echo "=================================="
+
 cat > jenkins-payload.json <<EOF
 {
   "jobName": "$JOB_NAME",
@@ -49,16 +59,6 @@ cat > jenkins-payload.json <<EOF
   "issueType": "$ISSUE_TYPE"
 }
 EOF
-
-echo "=================================="
-BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" \
-  "${BUILD_URL}api/json")
-
-RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
-[ -z "$RESULT" ] && RESULT="UNKNOWN"
-
-echo "RESULT(from API): $RESULT"
-echo "=================================="
 
 curl -s -X POST \
   -H "Content-Type: application/json" \
