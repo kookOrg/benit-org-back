@@ -84,8 +84,6 @@ EOF
 EXIT_CODE=$?
 # 종료 시점에 실패 여부 판단 후 payload 보내기
 trap '
-  #EXIT_CODE=$?
-
   if [ "$EXIT_CODE" -ne 0 ]; then
     RESULT="FAILURE"
   fi
