@@ -1,5 +1,7 @@
 #!/bin/bash
-set -e
+
+# ❗ set -e 제거 (우리가 직접 실패 판단)
+# set -e
 
 # 타임존 설정
 TZ='Asia/Seoul'
@@ -12,9 +14,6 @@ BRANCH="${GIT_BRANCH}"
 JOB_URL="${BUILD_URL}"
 LOG_URL="${BUILD_URL}consoleText"
 COMMIT_HASH="${GIT_COMMIT}"
-
-# 기본 상태는 SUCCESS
-#RESULT="SUCCESS"
 
 # 시작 시간
 START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
@@ -32,17 +31,37 @@ else
   TRIGGER_TYPE="스케줄"
 fi
 
+# -----------------------------
+# 실제 빌드 수행
+# -----------------------------
+echo "[INFO] 실제 빌드 수행 시작"
+
+# 예시 (이미 다른 Build Step에서 수행했다면 제거)
+# mvn clean package
+# BUILD_EXIT_CODE=$?
+
+# 👉 프리스타일에서 이미 앞 단계에서 실패했다면
+BUILD_EXIT_CODE=$?
+
+# 결과 판단
+if [ "$BUILD_EXIT_CODE" -eq 0 ]; then
+  RESULT="SUCCESS"
+else
+  RESULT="FAILURE"
+fi
+
 # 로그 추출
-BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
+BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" \
+  | tail -n 1000 | sed 's/"/\\"/g')
 
-# Payload 생성 및 전송 함수
-send_payload() {
-  echo "[INFO] Webhook payload 전송"
+# -----------------------------
+# Payload 전송
+# -----------------------------
+echo "[INFO] Webhook payload 전송"
 
-  # 종료 시간
-  END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
-  cat > jenkins-payload.json <<EOF
+cat > jenkins-payload.json <<EOF
 {
   "jobName": "$JOB_NAME",
   "buildNumber": $BUILD_NUMBER,
@@ -62,40 +81,17 @@ send_payload() {
 }
 EOF
 
-  echo "==== 보내는 JSON ===="
-  cat jenkins-payload.json
+echo "==== 보내는 JSON ===="
+cat jenkins-payload.json
 
-  RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/webhook_response.log -X POST \
-    -H "Content-Type: application/json" \
-    -H "x-webhook-secret: $WEBHOOK_SECRET" \
-    --data-binary @jenkins-payload.json \
-    "$WEBHOOK_URL")
+RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/webhook_response.log -X POST \
+  -H "Content-Type: application/json" \
+  -H "x-webhook-secret: $WEBHOOK_SECRET" \
+  --data-binary @jenkins-payload.json \
+  "$WEBHOOK_URL")
 
-  echo "[INFO] Webhook 응답코드: $RESPONSE"
-  echo "========================================="
-  cat /tmp/webhook_response.log
+echo "[INFO] Webhook 응답코드: $RESPONSE"
+cat /tmp/webhook_response.log
 
-  if [ "$RESPONSE" -ne 200 ]; then
-    echo "[ERROR] Webhook 호출 실패 (HTTP $RESPONSE)"
-    exit 1
-  fi
-}
-
-# 종료 시점에 실패 여부 판단 후 payload 보내기
-#trap '
-#  EXIT_CODE=$?
-
-#  if [ "$EXIT_CODE" -ne 0 ]; then
-#    RESULT="FAILURE"
-#  fi
-
-#  send_payload
-#' EXIT
-# Jenkins 최종 빌드 결과 사용
-RESULT="${BUILD_RESULT:-UNKNOWN}"
-
-send_payload
-
-# 실패 테스트
-#echo "[TEST] 강제로 빌드를 실패"
-#exit 1
+# Jenkins 빌드 결과 반영
+exit "$BUILD_EXIT_CODE"
