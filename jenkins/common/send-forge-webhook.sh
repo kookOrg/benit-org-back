@@ -50,7 +50,9 @@ cat > jenkins-payload.json <<EOF
 }
 EOF
 
+echo "=================================="
 echo "BUILD_RESULT: ${BUILD_RESULT}"
+echo "=================================="
 
 curl -s -X POST \
   -H "Content-Type: application/json" \
