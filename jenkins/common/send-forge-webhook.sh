@@ -13,8 +13,8 @@ JOB_URL="${BUILD_URL}"
 LOG_URL="${BUILD_URL}consoleText"
 COMMIT_HASH="${GIT_COMMIT}"
 
-# 결과
-RESULT="${BUILD_STATUS}"
+# 기본 상태는 SUCCESS
+RESULT="SUCCESS"
 
 # 시작 시간
 START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
