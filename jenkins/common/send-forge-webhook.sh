@@ -1,11 +1,8 @@
 #!/bin/bash
-#set -e
 
-# 타임존 설정
 TZ='Asia/Seoul'
 export TZ
 
-# 기본 정보
 JOB_NAME="${JOB_NAME}"
 BUILD_NUMBER="${BUILD_NUMBER}"
 BRANCH="${GIT_BRANCH}"
@@ -13,17 +10,13 @@ JOB_URL="${BUILD_URL}"
 LOG_URL="${BUILD_URL}consoleText"
 COMMIT_HASH="${GIT_COMMIT}"
 
-# 기본 상태는 SUCCESS
-RESULT="SUCCESS"
+RESULT="${BUILD_RESULT:-UNKNOWN}"
 
-# 시작 시간
 START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
-# 빌드 유저 정보
 STARTED_BY="${BUILD_USER_ID:-"-"}"
 STARTED_BY_EMAIL="${BUILD_USER_EMAIL:-"-"}"
 
-# 트리거 타입 판단
 if [ -n "$BUILD_USER_ID" ]; then
   TRIGGER_TYPE="수동"
 elif [ -n "$CHANGE_ID" ]; then
@@ -32,17 +25,12 @@ else
   TRIGGER_TYPE="스케줄"
 fi
 
-# 로그 추출
-BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
+BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s \
+  "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
 
-# Payload 생성 및 전송 함수
-send_payload() {
-  echo "[INFO] Webhook payload 전송"
+END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
-  # 종료 시간
-  END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-
-  cat > jenkins-payload.json <<EOF
+cat > jenkins-payload.json <<EOF
 {
   "jobName": "$JOB_NAME",
   "buildNumber": $BUILD_NUMBER,
@@ -62,36 +50,8 @@ send_payload() {
 }
 EOF
 
-  echo "==== 보내는 JSON ===="
-  cat jenkins-payload.json
-
-  RESPONSE=$(curl -s -w "%{http_code}" -o /tmp/webhook_response.log -X POST \
-    -H "Content-Type: application/json" \
-    -H "x-webhook-secret: $WEBHOOK_SECRET" \
-    --data-binary @jenkins-payload.json \
-    "$WEBHOOK_URL")
-
-  echo "[INFO] Webhook 응답코드: $RESPONSE"
-  echo "========================================="
-  cat /tmp/webhook_response.log
-
-  if [ "$RESPONSE" -ne 200 ]; then
-    echo "[ERROR] Webhook 호출 실패 (HTTP $RESPONSE)"
-    exit 1
-  fi
-}
-
-EXIT_CODE=$?
-echo "EXIT_CODE: $EXIT_CODE"
-# 종료 시점에 실패 여부 판단 후 payload 보내기
-trap '
-  if [ "$EXIT_CODE" -ne 0 ]; then
-    RESULT="FAILURE"
-  fi
-
-  send_payload
-' EXIT EXIT_CODE
-
-# 실패 테스트
-#echo "[TEST] 강제로 빌드를 실패"
-#exit 1
+curl -s -X POST \
+  -H "Content-Type: application/json" \
+  -H "x-webhook-secret: $WEBHOOK_SECRET" \
+  --data-binary @jenkins-payload.json \
+  "$WEBHOOK_URL"
