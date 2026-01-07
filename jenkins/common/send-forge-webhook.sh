@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+#set -e
 
 # 타임존 설정
 TZ='Asia/Seoul'
@@ -90,7 +90,7 @@ trap '
   fi
 
   send_payload
-' EXIT
+' EXIT EXIT_CODE
 
 # 실패 테스트
 #echo "[TEST] 강제로 빌드를 실패"
