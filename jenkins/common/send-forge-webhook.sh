@@ -34,7 +34,7 @@ BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}conso
 # 빌드 결과
 BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}api/json")
 RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
-[ -z "$RESULT" ] && RESULT="UNKNOWN"
+[ -z "$RESULT" ] && RESULT="FAILURE"
 
 cat > jenkins-payload.json <<EOF
 {
