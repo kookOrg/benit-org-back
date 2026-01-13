@@ -6,7 +6,7 @@ export TZ
 # 기본 정보
 JOB_NAME="${JOB_NAME}"
 BUILD_NUMBER="${BUILD_NUMBER}"
-BRANCH="${GIT_BRANCH}"
+CO_NUMBER="${BRANCH_NAME}"
 JOB_URL="${BUILD_URL}"
 LOG_URL="${BUILD_URL}consoleText"
 COMMIT_HASH="${GIT_COMMIT}"
@@ -41,7 +41,7 @@ cat > jenkins-payload.json <<EOF
   "jobName": "$JOB_NAME",
   "buildNumber": $BUILD_NUMBER,
   "result": "$RESULT",
-  "branch": "$BRANCH",
+  "coNumber": "$CO_NUMBER",
   "commitHash": "$COMMIT_HASH",
   "startedBy": "$STARTED_BY",
   "startedByEmail": "$STARTED_BY_EMAIL",
