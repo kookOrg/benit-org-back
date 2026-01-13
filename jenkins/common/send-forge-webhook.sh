@@ -33,6 +33,9 @@ fi
 BUILD_LOG=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}consoleText" | sed '/jenkins\/common\/send-forge-webhook.sh/,$d' | tail -n 1000)
 SAFE_BUILD_LOG=$(jq -Rs . <<< "$BUILD_LOG")
 
+echo "BUILD_LOG length: ${#BUILD_LOG}"
+echo "SAFE_BUILD_LOG=[$SAFE_BUILD_LOG]"
+
 # 빌드 결과
 BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}api/json")
 RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
