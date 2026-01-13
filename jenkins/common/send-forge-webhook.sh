@@ -48,7 +48,7 @@ cat > jenkins-payload.json <<EOF
   "startTime": "$START_TIME",
   "endTime": "$END_TIME",
   "triggerType": "$TRIGGER_TYPE",
-  "buildLog": $SAFE_BUILD_LOG,
+  "buildLog": $BUILD_JSON,
   "jobUrl": "$JOB_URL",
   "logUrl": "$LOG_URL",
   "projectKey": "$PROJECT_KEY",
