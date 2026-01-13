@@ -29,9 +29,7 @@ else
 fi
 
 # 상세 로그
-#BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
-BUILD_LOG=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}consoleText" | sed '/jenkins\/common\/send-forge-webhook.sh/,$d' | tail -n 1000)
-SAFE_BUILD_LOG=$(jq -Rs . <<< "$BUILD_LOG")
+BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g' | base64 -w 0)
 
 # 빌드 결과
 BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}api/json")
@@ -50,7 +48,7 @@ cat > jenkins-payload.json <<EOF
   "startTime": "$START_TIME",
   "endTime": "$END_TIME",
   "triggerType": "$TRIGGER_TYPE",
-  "buildLog": $SAFE_BUILD_LOG,
+  "buildLog": "$BUILD_LOG",
   "jobUrl": "$JOB_URL",
   "logUrl": "$LOG_URL",
   "projectKey": "$PROJECT_KEY",
