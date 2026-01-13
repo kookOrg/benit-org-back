@@ -29,9 +29,9 @@ else
 fi
 
 # 상세 로그
-#BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
-BUILD_LOG=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}consoleText" | sed '/jenkins\/common\/send-forge-webhook.sh/,$d' | tail -n 1000)
-SAFE_BUILD_LOG=$(jq -Rs . <<< "$BUILD_LOG")
+BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g')
+#BUILD_LOG=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}consoleText" | sed '/jenkins\/common\/send-forge-webhook.sh/,$d' | tail -n 1000)
+#SAFE_BUILD_LOG=$(jq -Rs . <<< "$BUILD_LOG")
 
 echo "BUILD_LOG length: ${#BUILD_LOG}"
 echo "SAFE_BUILD_LOG=[$SAFE_BUILD_LOG]"
@@ -41,25 +41,39 @@ BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}api/
 RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
 [ -z "$RESULT" ] && RESULT="FAILURE"
 
-cat > jenkins-payload.json <<EOF
-{
-  "jobName": "$JOB_NAME",
-  "buildNumber": $BUILD_NUMBER,
-  "result": "$RESULT",
-  "branch": "$BRANCH",
-  "commitHash": "$COMMIT_HASH",
-  "startedBy": "$STARTED_BY",
-  "startedByEmail": "$STARTED_BY_EMAIL",
-  "startTime": "$START_TIME",
-  "endTime": "$END_TIME",
-  "triggerType": "$TRIGGER_TYPE",
-  "buildLog": $SAFE_BUILD_LOG,
-  "jobUrl": "$JOB_URL",
-  "logUrl": "$LOG_URL",
-  "projectKey": "$PROJECT_KEY",
-  "issueType": "$ISSUE_TYPE"
-}
-EOF
+jq -n \
+  --arg jobName "$JOB_NAME" \
+  --argjson buildNumber "$BUILD_NUMBER" \
+  --arg result "$RESULT" \
+  --arg branch "$BRANCH" \
+  --arg commitHash "$COMMIT_HASH" \
+  --arg startedBy "$STARTED_BY" \
+  --arg startedByEmail "$STARTED_BY_EMAIL" \
+  --arg startTime "$START_TIME" \
+  --arg endTime "$END_TIME" \
+  --arg triggerType "$TRIGGER_TYPE" \
+  --arg buildLog "$BUILD_LOG" \
+  --arg jobUrl "$JOB_URL" \
+  --arg logUrl "$LOG_URL" \
+  --arg projectKey "$PROJECT_KEY" \
+  --arg issueType "$ISSUE_TYPE" \
+'{
+  jobName: $jobName,
+  buildNumber: $buildNumber,
+  result: $result,
+  branch: $branch,
+  commitHash: $commitHash,
+  startedBy: $startedBy,
+  startedByEmail: $startedByEmail,
+  startTime: $startTime,
+  endTime: $endTime,
+  triggerType: $triggerType,
+  buildLog: $buildLog,
+  jobUrl: $jobUrl,
+  logUrl: $logUrl,
+  projectKey: $projectKey,
+  issueType: $issueType
+}' > jenkins-payload.json
 
 echo "==== jenkins-payload ===="
 cat jenkins-payload.json
