@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class BenitBackApplication {
-    // 테스트46
+    // 테스트47
     public static void main(String[] args) {
         SpringApplication.run(BenitBackApplication.class, args);
     }
