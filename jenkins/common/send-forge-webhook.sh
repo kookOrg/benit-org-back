@@ -35,9 +35,17 @@ RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
 # 빌드 시작 / 종료 시간
 START_TIMESTAMP=$(echo "$BUILD_JSON" | sed -n 's/.*"timestamp":\([0-9]*\).*/\1/p')
 DURATION=$(echo "$BUILD_JSON" | sed -n 's/.*"duration":\([0-9]*\).*/\1/p')
+BUILDING=$(echo "$BUILD_JSON" | sed -n 's/.*"building":\([^,}]*\).*/\1/p')
 
 START_TIME=$(date -d "@$((START_TIMESTAMP/1000))" '+%Y-%m-%d %H:%M:%S')
-END_TIME=$(date -d "@$(( (START_TIMESTAMP + DURATION) / 1000 ))" '+%Y-%m-%d %H:%M:%S')
+
+if [ "$BUILDING" = "true" ] || [ -z "$DURATION" ] || [ "$DURATION" = "0" ]; then
+  # 빌드 진행 중이면 종료시간은 '현재'
+  END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+else
+  # 빌드 완료 후면 timestamp + duration
+  END_TIME=$(date -d "@$(( (START_TIMESTAMP + DURATION) / 1000 ))" '+%Y-%m-%d %H:%M:%S')
+fi
 
 echo "====  ===="
 echo "==== $START_TIME ===="
