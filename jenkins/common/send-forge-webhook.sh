@@ -12,8 +12,8 @@ LOG_URL="${BUILD_URL}consoleText"
 COMMIT_HASH="${GIT_COMMIT}"
 
 # 시작/종료 시간
-START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
-END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+#START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+#END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
 # 빌드 유저
 STARTED_BY="${BUILD_USER_ID:-"-"}"
@@ -35,6 +35,13 @@ BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}conso
 BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}api/json")
 RESULT=$(echo "$BUILD_JSON" | sed -n 's/.*"result":"\([^"]*\)".*/\1/p')
 [ -z "$RESULT" ] && RESULT="FAILURE"
+
+# 빌드 시작 / 종료 시간
+START_TIMESTAMP=$(echo "$BUILD_JSON" | sed -n 's/.*"timestamp":\([0-9]*\).*/\1/p')
+DURATION=$(echo "$BUILD_JSON" | sed -n 's/.*"duration":\([0-9]*\).*/\1/p')
+
+START_TIME=$(date -d "@$((START_TIMESTAMP/1000))" '+%Y-%m-%d %H:%M:%S')
+END_TIME=$(date -d "@$(( (START_TIMESTAMP + DURATION) / 1000 ))" '+%Y-%m-%d %H:%M:%S')
 
 cat > jenkins-payload.json <<EOF
 {
