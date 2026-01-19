@@ -11,10 +11,6 @@ JOB_URL="${BUILD_URL}"
 LOG_URL="${BUILD_URL}consoleText"
 COMMIT_HASH="${GIT_COMMIT}"
 
-# 시작/종료 시간
-#START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
-#END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
-
 # 빌드 유저
 STARTED_BY="${BUILD_USER_ID:-"-"}"
 STARTED_BY_EMAIL="${BUILD_USER_EMAIL:-"-"}"
@@ -42,6 +38,11 @@ DURATION=$(echo "$BUILD_JSON" | sed -n 's/.*"duration":\([0-9]*\).*/\1/p')
 
 START_TIME=$(date -d "@$((START_TIMESTAMP/1000))" '+%Y-%m-%d %H:%M:%S')
 END_TIME=$(date -d "@$(( (START_TIMESTAMP + DURATION) / 1000 ))" '+%Y-%m-%d %H:%M:%S')
+
+echo "====  ===="
+echo "==== $START_TIME ===="
+echo "==== $END_TIME ===="
+echo "====  ===="
 
 cat > jenkins-payload.json <<EOF
 {
