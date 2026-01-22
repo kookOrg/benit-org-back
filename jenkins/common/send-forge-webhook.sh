@@ -48,9 +48,13 @@ else
   END_TIME=$(date -d "@$(( (START_TIMESTAMP + DURATION) / 1000 ))" '+%Y-%m-%d %H:%M:%S')
 fi
 
+LOG_TIME=$(date '+%Y-%m-%d %H:%M:%S.%3N')
+
 echo "====  ===="
-echo "==== $START_TIME ===="
-echo "==== $END_TIME ===="
+echo "==== START_TIME: $START_TIME ($LOG_TIME) ===="
+sleep 0.1
+LOG_TIME2=$(date '+%Y-%m-%d %H:%M:%S.%3N')
+echo "==== END_TIME  : $END_TIME ($LOG_TIME2) ===="
 echo "====  ===="
 
 cat > jenkins-payload.json <<EOF
