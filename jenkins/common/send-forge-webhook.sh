@@ -37,7 +37,8 @@ START_TIMESTAMP=$(echo "$BUILD_JSON" | sed -n 's/.*"timestamp":\([0-9]*\).*/\1/p
 DURATION=$(echo "$BUILD_JSON" | sed -n 's/.*"duration":\([0-9]*\).*/\1/p')
 BUILDING=$(echo "$BUILD_JSON" | sed -n 's/.*"building":\([^,}]*\).*/\1/p')
 
-START_TIME=$(date -d "@$((START_TIMESTAMP/1000))" '+%Y-%m-%d %H:%M:%S')
+#START_TIME=$(date -d "@$((START_TIMESTAMP/1000))" '+%Y-%m-%d %H:%M:%S')
+START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 
 if [ "$BUILDING" = "true" ] || [ -z "$DURATION" ] || [ "$DURATION" = "0" ]; then
   # 빌드 진행 중이면 종료시간은 '현재'
