@@ -16,16 +16,17 @@ STARTED_BY="${BUILD_USER_ID:-"-"}"
 STARTED_BY_EMAIL="${BUILD_USER_EMAIL:-"-"}"
 
 # 트리거 타입
-if [ -n "$BUILD_USER_ID" ]; then
-  TRIGGER_TYPE="수동"
-elif [ -n "$CHANGE_ID" ]; then
-  TRIGGER_TYPE="PR"
-else
+if [ "$BUILD_USER_ID" = "timer" ]; then
   TRIGGER_TYPE="스케줄"
+elif [ -n "$BUILD_USER_ID" ]; then
+  TRIGGER_TYPE="수동"
+else
+  TRIGGER_TYPE="기타"
 fi
 
 # 상세 로그
-BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 1000 | sed 's/"/\\"/g' | base64 -w 0)
+MAX_LOG_BYTES=500
+BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -n 200 | tail -c "$MAX_LOG_BYTES" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()))" | sed 's/^"//;s/"$//')
 
 # 빌드 결과
 BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}api/json")
