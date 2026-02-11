@@ -29,8 +29,8 @@ fi
 #BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -c "$MAX_LOG_BYTES" | base64 -w 0)
 
 # 상세 로그 (앞 20% + 뒤 80%, base64 인코딩)
-HEAD_BYTES=3200
-TAIL_BYTES=12800
+HEAD_BYTES=200
+TAIL_BYTES=800
 FULL_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText")
 FULL_LOG_SIZE=$(echo "$FULL_LOG" | wc -c | tr -d ' ')
 if [ "$FULL_LOG_SIZE" -le $((HEAD_BYTES + TAIL_BYTES)) ]; then
