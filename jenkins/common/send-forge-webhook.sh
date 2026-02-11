@@ -27,19 +27,20 @@ fi
 # 상세 로그
 #MAX_LOG_BYTES=500
 #BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -c "$MAX_LOG_BYTES" | base64 -w 0)
+BUILD_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText" | tail -c 15000 | base64 -w 0)
 
 # 상세 로그 (앞 20% + 뒤 80%, base64 인코딩)
-HEAD_BYTES=5000
-TAIL_BYTES=10000
-FULL_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText")
-FULL_LOG_SIZE=$(echo "$FULL_LOG" | wc -c | tr -d ' ')
-if [ "$FULL_LOG_SIZE" -le $((HEAD_BYTES + TAIL_BYTES)) ]; then
-  BUILD_LOG=$(echo "$FULL_LOG" | base64 -w 0)
-else
-  LOG_HEAD=$(echo "$FULL_LOG" | head -c "$HEAD_BYTES")
-  LOG_TAIL=$(echo "$FULL_LOG" | tail -c "$TAIL_BYTES")
-  BUILD_LOG=$(printf '%s\n\n... (중략) ...\n\n%s' "$LOG_HEAD" "$LOG_TAIL" | base64 -w 0)
-fi
+#HEAD_BYTES=5000
+#TAIL_BYTES=10000
+#FULL_LOG=$(curl -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" -s "${BUILD_URL}consoleText")
+#FULL_LOG_SIZE=$(echo "$FULL_LOG" | wc -c | tr -d ' ')
+#if [ "$FULL_LOG_SIZE" -le $((HEAD_BYTES + TAIL_BYTES)) ]; then
+#  BUILD_LOG=$(echo "$FULL_LOG" | base64 -w 0)
+#else
+#  LOG_HEAD=$(echo "$FULL_LOG" | head -c "$HEAD_BYTES")
+#  LOG_TAIL=$(echo "$FULL_LOG" | tail -c "$TAIL_BYTES")
+#  BUILD_LOG=$(printf '%s\n\n... (중략) ...\n\n%s' "$LOG_HEAD" "$LOG_TAIL" | base64 -w 0)
+#fi
 
 # 빌드 결과
 BUILD_JSON=$(curl -s -u "${JENKINS_USER}:${JENKINS_API_TOKEN}" "${BUILD_URL}api/json")
